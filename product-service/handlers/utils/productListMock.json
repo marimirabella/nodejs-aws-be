@@ -1,0 +1,44 @@
+[
+  {
+    "id": "1",
+    "title": "The weekend in Cappadocia",
+    "description": "Do you dream of a land with abounding fairy chimney rock formations, underground cities and churches inside rock-cut caves? Well, behold such a land does indeed exist in this universe, and even better, on Earth! Cappadocia is in the Turkish region of central Anatolia (on the Asian side of Turkey) and is famous for its unique rock formations and caves which were used by Christian settlers centuries ago. Being a short 90-minute flight away from Istanbul and Izmir, a visit to Cappadocia is a MUST on your tour of Turkey",
+    "price": 1000,
+    "imageUrl": "https://www.impetustravel.com/wp-content/uploads/2020/06/cap1.jpg"
+  },
+  {
+    "id": "2",
+    "title": "Erciyes ski New Year tour",
+    "description": "Skiing is one of the best activity that is very close to the Göreme town. Mount Erciyes at Kayseri is the local skiing center and are easy to arrange day trips from Cappadocia. Mount Erciyes has approximately 3900 meters attitude so that skiing and mountain sports lovers is influenced a great deal. Mount Erciyes in Cappadocia allows us to make completely different activity.",
+    "price": 1500,
+    "imageUrl": "https://img.itinari.com/activity/images/original/2b40b4e1-e527-4c30-b56a-31d90fe35568-erciyes-kayak-merkezi-1024x686.jpg?ch=DPR&dpr=1&w=1200&h=800&s=f83760cfb0ad85c01a0f89404199386b"
+  },
+  {
+    "id": "3",
+    "title": "Mexico City: Teotihuacan, Shrine of Guadalupe & Tlatelolco",
+    "description": "After being picked up from your hotel or accommodation, travel with your guide to the first stop on the tour, Tlatelolco. This ancient pre-Columbian landmark is located at the Plaza de las Tres Culturas, and is an important archaeological site. It is also notoriously known as the location of the 1968 Tlatelolco massacr",
+    "price": 3000,
+    "imageUrl": "https://www.history.com/.image/c_fit%2Ccs_srgb%2Cfl_progressive%2Cq_auto:good%2Cw_620/MTU3ODc5MDg3MjM4NDIzODgx/mexico-anahuac-teotihuacan-pyramid-de-la-luna.jpg"
+  },
+  {
+    "id": "4",
+    "title": "The weekend in Amsterdam",
+    "description": "From kayaking the iconic canals to discovering its world-famous art tradition, exploring Amsterdam can feel like walking through a dream. Find the best things to do and make the most of your visit to the Dutch capital.",
+    "price": 1000,
+    "imageUrl": "https://www.telegraph.co.uk/content/dam/insurance/2016/04/06/amsterdam.jpg"
+  },
+  {
+    "id": "5",
+    "title": "In love with Paris",
+    "description": "Embark on a cruise on the River Seine that begins at the foot of the Eiffel Tower. Glide under the bridges of Paris and marvel at a succession of beautiful monuments along the waterway as you listen to commentary about Paris and the sights you pass by. During your cruise, you pass by the Eiffel Tower, Notre Dame, Hotel de Ville...",
+    "price": 2000,
+    "imageUrl": "https://static.toiimg.com/thumb/69359415/paris.jpg?width=1200&height=900"
+  },
+  {
+    "id": "6",
+    "title": "Disneyland in Paris",
+    "description": "In a fantasy world not so far away, Disney heroes and heroines live in fairytales that are, happily, never-ending. Enjoy endless fun in 5 magical lands!",
+    "price": 1000,
+    "imageUrl": "https://www.sortiraparis.com/images/80/76154/455912-laurentp-disneyland-paris.jpg"
+  }
+]

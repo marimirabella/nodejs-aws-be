@@ -1,0 +1,90 @@
+swagger: '2.0'
+info:
+  version: '0.0.1'
+  title: Product Service API
+host: localhost:3000
+basePath: /
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /products:
+    get:
+      description: Returns all products
+      operationId: getProductList
+      responses:
+        200:
+          description: Product list.
+          schema:
+            $ref: '#/definitions/ProductList'
+        404:
+          description: Products not found
+          schema:
+            $ref: '#/definitions/ProductsError'
+  /products/{productId}:
+    get:
+      description: Returns product by id
+      operationId: getProductById
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          type: integer
+          minimum: 1
+          description: The id of the product to return.
+      responses:
+        200:
+          description: Product by id.
+          schema:
+            $ref: '#/definitions/Product'
+        404:
+          description: Product not found
+          schema:
+            $ref: '#/definitions/ProductError'
+
+# schemas
+definitions:
+  ProductList:
+    type: array
+    items:
+      $ref: '#/definitions/Product'
+    example:
+      - id: 7567ec4b-b10c-48c5-9345-fc73c48a80aa
+        title: The weekend in Cappadocia
+        description: Do you dream of a land with abounding fairy chimney rock formations, underground cities and churches inside rock-cut caves? Well, behold such a land does indeed exist in this universe, and even better, on Earth!
+        price: 1000
+        imageUrl: https://www.impetustravel.com/wp-content/uploads/2020/06/cap1.jpg
+      - id: 7567ec4b-b10c-48c5-9345-fc73c48a80ab
+        title: Disneyland in Paris
+        description: In a fantasy world not so far away, Disney heroes and heroines live in fairytales that are, happily, never-ending. Enjoy endless fun in 5 magical lands!
+        price: 1000
+        imageUrl: https://www.sortiraparis.com/images/80/76154/455912-laurentp-disneyland-paris.jpg
+  ProductsError:
+    type: string
+    example: 'Products not Found'
+  Product:
+    type: object
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+      description:
+        type: string
+      price:
+        type: number
+      imageUrl:
+        type: string
+    example:
+      id: 7567ec4b-b10c-48c5-9345-fc73c48a80aa
+      title: The weekend in Cappadocia
+      description: Do you dream of a land with abounding fairy chimney rock formations, underground cities and churches inside rock-cut caves? Well, behold such a land does indeed exist in this universe, and even better, on Earth!
+      price: 1000
+      imageUrl: https://www.impetustravel.com/wp-content/uploads/2020/06/cap1.jpg
+  ProductError:
+    type: string
+    example: 'Product not Found'
