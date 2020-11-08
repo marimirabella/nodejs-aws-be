@@ -1,2 +1,1 @@
-export * from './getProductList'
-export * from './getProductById'
+export * from './api'

@@ -1,9 +1,10 @@
 import { APIGatewayProxyEvent, Context } from 'aws-lambda';
-import { getMockProductFromDbById } from './utils/getFakeDbItems';
-import { Product } from './typings';
+
+import { Product } from '../../data-access';
+import { ProductService } from '../../services/product';
 import { getProductById } from './getProductById';
 
-jest.mock('./utils/getFakeDbItems');
+jest.mock('../../services/product');
 
 describe('getProductById', () => {
   let event: APIGatewayProxyEvent;
@@ -13,25 +14,27 @@ describe('getProductById', () => {
   let productList: Product[];
 
   beforeEach(() => {
-    event = ({ pathParameters: { productId: '3' } } as unknown) as APIGatewayProxyEvent;
+    event = ({
+      pathParameters: { productId: '5802483b-16e5-4347-a648-1bead3529489' },
+    } as unknown) as APIGatewayProxyEvent;
     _context = { functionName: 'getProductById' } as Context;
     cb = jest.fn();
 
     product = {
-      id: '3',
+      id: '5802483b-16e5-4347-a648-1bead3529489',
       title: 'title',
       description: 'description',
       price: 1000,
-      imageUrl: 'https://image-url/',
+      image_url: 'https://image-url/',
+      count: 10,
     };
 
-    const product2 = { ...product, id: '4' };
+    const product2 = { ...product, id: 'e47aa487-3050-4e76-a40c-726056ba8b88' };
 
     productList = [product, product2];
 
-    (getMockProductFromDbById as jest.Mock).mockImplementation(() =>
-      productList.find(product => product.id === event.pathParameters!.productId)
-    );
+    (ProductService.prototype.getProductById as jest.Mock).mockResolvedValue(productList.find(product => product.id === event.pathParameters!.productId));
+
   });
 
   it('should respond with a product when the product was found', async () => {
@@ -48,7 +51,7 @@ describe('getProductById', () => {
   });
 
   it('should respond with message when product was not found', async () => {
-    (getMockProductFromDbById as jest.Mock).mockResolvedValue(undefined);
+    (ProductService.prototype.getProductById as jest.Mock).mockResolvedValue(undefined);
 
     const response = {
       statusCode: 404,
@@ -63,9 +66,9 @@ describe('getProductById', () => {
   });
 
   it('should respond with error message on error', async () => {
-    (getMockProductFromDbById as jest.Mock).mockRejectedValue(new Error('Error'));
+    (ProductService.prototype.getProductById as jest.Mock).mockRejectedValue(new Error('Error'));
 
-    const response = { statusCode: 500, body: JSON.stringify('Unhandled error') };
+    const response = { statusCode: 500, body: JSON.stringify('Unhandled error: Error') };
 
     expect(await getProductById(event, _context, cb)).toEqual(response);
   });
