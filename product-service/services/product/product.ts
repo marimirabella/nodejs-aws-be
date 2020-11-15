@@ -14,6 +14,9 @@ import {
 } from './stockQueries';
 import { begin, commit, rollback } from '../transactionQueries';
 
+const defaultImgUrl =
+  'https://lp-cms-production.imgix.net/features/2019/05/Solo-Travel-in-Nature-acbfea52bfaf.jpg';
+
 export class ProductService {
   async getProducts(): Promise<Product[]> {
     const client = getClient();
@@ -34,16 +37,17 @@ export class ProductService {
     const client = getClient();
     await client.connect();
 
-    const { rows: products } = await client.query<Product>(getProductByIdQuery, [id]);
-
-    const product = products[0];
+    const {
+      rows: [product],
+    } = await client.query<Product>(getProductByIdQuery, [id]);
 
     await client.end();
 
     return product;
   }
 
-  async createProduct({ title, description, price, image_url, count }: Product): Promise<Product> {
+  async createProduct(body: Product): Promise<Product> {
+    const { title, description, price, image_url = defaultImgUrl, count } = body;
     const client = getClient();
 
     try {
@@ -53,15 +57,17 @@ export class ProductService {
 
       const values = [title, description, price, image_url];
 
-      const { rows: products } = await client.query<Product>(insertProductQuery, values);
-      const { id } = products[0];
+      const {
+        rows: [{ id }],
+      } = await client.query<Product>(insertProductQuery, values);
 
       await client.query<Stock>(createStockQuery, [id, count]);
 
       await client.query(commit);
 
-      const { rows: productsById } = await client.query<Product>(getProductByIdQuery, [id]);
-      const product = productsById[0]
+      const {
+        rows: [product],
+      } = await client.query<Product>(getProductByIdQuery, [id]);
 
       await client.end();
 

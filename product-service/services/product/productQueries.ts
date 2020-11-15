@@ -1,4 +1,6 @@
 export const createProductsTableQuery = `
+  create extension if not exists "uuid-ossp";
+
   create table if not exists products (
     id uuid primary key default uuid_generate_v4() unique,
     title text not null unique,
