@@ -1,9 +1,10 @@
 import { APIGatewayProxyEvent, Context } from 'aws-lambda';
-import { getMockProductsFromDb } from './utils/getFakeDbItems';
-import { Product } from './typings';
+
+import { Product } from '../../data-access';
+import { ProductService } from '../../services/product';
 import { getProductList } from './getProductList';
 
-jest.mock('./utils/getFakeDbItems');
+jest.mock('../../services/product');
 
 describe('getProductList', () => {
   let event: APIGatewayProxyEvent;
@@ -22,18 +23,20 @@ describe('getProductList', () => {
         title: 'title-1',
         description: 'description-1',
         price: 1000,
-        imageUrl: 'https://image-url-1/'
+        image_url: 'https://image-url-1/',
+        count: 13,
       },
       {
         id: 'id-2',
         title: 'title-2',
         description: 'description-2',
         price: 1000,
-        imageUrl: 'https://image-url-2/'
+        image_url: 'https://image-url-2/',
+        count: 20,
       },
     ];
 
-    (getMockProductsFromDb as jest.Mock).mockResolvedValue(products);
+    (ProductService.prototype.getProducts as jest.Mock).mockResolvedValue(products);
   });
 
   it('should respond with a product when products exist', async () => {
@@ -50,7 +53,7 @@ describe('getProductList', () => {
   });
 
   it('should respond with message when products do not exist', async () => {
-    (getMockProductsFromDb as jest.Mock).mockResolvedValue(undefined);
+    (ProductService.prototype.getProducts as jest.Mock).mockResolvedValue([]);
 
     const response = {
       statusCode: 404,
@@ -65,9 +68,9 @@ describe('getProductList', () => {
   });
 
   it('should respond with error message on error', async () => {
-    (getMockProductsFromDb as jest.Mock).mockRejectedValue(new Error('Error'));
+    (ProductService.prototype.getProducts as jest.Mock).mockRejectedValue(new Error('Error'));
 
-    const response = { statusCode: 500, body: JSON.stringify('Unhandled error') };
+    const response = { statusCode: 500, body: JSON.stringify('Unhandled error: Error') };
 
     expect(await getProductList(event, _context, cb)).toEqual(response);
   });

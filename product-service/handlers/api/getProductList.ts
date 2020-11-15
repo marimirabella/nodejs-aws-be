@@ -1,12 +1,17 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 
-import { createResponse, handleError, getMockProductsFromDb } from './utils';
+import { ProductService } from '../../services/product';
+import { createResponse, handleError } from '../utils';
+
+const Product = new ProductService();
 
 export const getProductList: APIGatewayProxyHandler = async () => {
   try {
-    const products = await getMockProductsFromDb();
+    console.log('get products request');
 
-    if (products) {
+    const products = await Product.getProducts();
+
+    if (products.length) {
       return createResponse({
         statusCode: 200,
         body: products,
@@ -17,7 +22,7 @@ export const getProductList: APIGatewayProxyHandler = async () => {
       statusCode: 404,
       body: { message: 'Products not found' },
     });
-  } catch {
-    return handleError('Unhandled error');
+  } catch (err) {
+    return handleError(err);
   }
 };

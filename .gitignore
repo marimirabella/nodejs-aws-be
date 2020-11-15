@@ -8,3 +8,9 @@ jspm_packages
 
 # Webpack directories
 .webpack
+
+# misc
+.env
+
+yarn-debug.log*
+yarn-error.log*
