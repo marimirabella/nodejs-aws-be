@@ -15,12 +15,14 @@ const serverlessConfiguration: Serverless = {
   provider: {
     name: 'aws',
     runtime: 'nodejs12.x',
+    stage: 'dev',
     region: 'eu-west-1',
     apiGateway: {
       minimumCompressionSize: 1024,
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      PRODUCT_SQS_URL: { 'Fn::ImportValue': 'catalogItemsQueueUrl' },
     },
     iamRoleStatements: [
       {
@@ -32,6 +34,11 @@ const serverlessConfiguration: Serverless = {
         Effect: 'Allow',
         Action: 's3:*',
         Resource: 'arn:aws:s3:::aws-import-s3/*',
+      },
+      {
+        Effect: 'Allow',
+        Action: 'sqs:*',
+        Resource: { 'Fn::ImportValue': 'catalogItemsQueueArn' },
       },
     ],
   },
