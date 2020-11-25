@@ -2,7 +2,7 @@
 import { SQSHandler } from 'aws-lambda';
 
 import { ProductService } from '../services/product';
-import { Cost, publishSns } from './utils';
+import { publishSns } from './utils';
 
 const Product = new ProductService();
 
@@ -14,15 +14,8 @@ export const catalogBatchProcess: SQSHandler = async ({ Records }) => {
 
     const products = await Product.createProducts(productsBody);
 
-    const budgetProducts = products?.filter(({ price }) => price <= 500);
-    const expensiveProducts = products?.filter(({ price }) => price > 500);
-
-    if (budgetProducts?.length) {
-      await publishSns(Cost.Budget, budgetProducts);
-    }
-
-    if (expensiveProducts?.length) {
-      await publishSns(Cost.Expensive, expensiveProducts);
+    if (products?.length) {
+      await publishSns(products);
     }
   } catch (err) {
     console.log('Catalog batch error', err.message);

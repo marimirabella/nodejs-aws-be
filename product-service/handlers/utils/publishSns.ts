@@ -1,24 +1,33 @@
-import AWS from 'aws-sdk';
-
 import { ProductWithStock } from '../../data-access';
+import { sns } from '../constants';
 
 export enum Cost {
   Budget = 'budget',
   Expensive = 'expensive',
 }
 
-export const publishSns = async (cost: Cost, products: ProductWithStock[]) => {
-  const sns = new AWS.SNS({ region: 'eu-west-1' });
+export const publishSns = async (products: ProductWithStock[]) => {
+  const budgetProducts = products?.filter(({ price }) => price <= 500);
+  const expensiveProducts = products?.filter(({ price }) => price > 500);
 
-  const publishParams = {
-    Subject: 'Product were successfully created',
-    Message: `We would like to inform you that the following products have been created:
-    \n ${JSON.stringify(products, null, 2)} \n`,
+  const getPublishSnsParams = (cost: Cost, products: ProductWithStock[]) => ({
+    Subject: 'Products were successfully created',
+    Message: `We would like to inform you that the following products have been created: \n ${JSON.stringify(
+      products,
+      null,
+      2
+    )} \n`,
     TopicArn: process.env.SNS_ARN,
     MessageAttributes: {
       cost: { DataType: 'String', StringValue: cost },
     },
-  };
+  });
 
-  await sns.publish(publishParams).promise();
+  if (budgetProducts?.length) {
+    await sns.publish(getPublishSnsParams(Cost.Budget, budgetProducts)).promise();
+  }
+
+  if (expensiveProducts?.length) {
+    await sns.publish(getPublishSnsParams(Cost.Expensive, expensiveProducts)).promise();
+  }
 };

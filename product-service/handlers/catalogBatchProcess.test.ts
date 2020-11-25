@@ -1,7 +1,7 @@
 import { Context, SQSEvent } from 'aws-lambda';
 
 import { ProductWithStock, ProductWithStockBody } from '../data-access';
-import { publishSns, Cost } from './utils/publishSns';
+import { publishSns } from './utils/publishSns';
 import { ProductService } from '../services/product';
 import { catalogBatchProcess } from './catalogBatchProcess';
 
@@ -77,8 +77,7 @@ describe('catalogBatchProcess', () => {
   it('should send a message to an amazon sns topic via email about successful product creation for budget and expensive products', async () => {
     await catalogBatchProcess(event, _context, cb);
 
-    expect(publishSns).toHaveBeenCalledWith(Cost.Budget, [products[0]]);
-    expect(publishSns).toHaveBeenCalledWith(Cost.Expensive, [products[1]]);
+    expect(publishSns).toHaveBeenCalledWith(products);
   });
 
   it('should NOT send a message to an amazon sns topic via email about successful product creation when products were not created', async () => {
@@ -86,7 +85,6 @@ describe('catalogBatchProcess', () => {
 
     await catalogBatchProcess(event, _context, cb);
 
-    expect(publishSns).not.toHaveBeenCalledWith(Cost.Budget, [products[0]]);
-    expect(publishSns).not.toHaveBeenCalledWith(Cost.Expensive, [products[1]]);
+    expect(publishSns).not.toHaveBeenCalledWith(products);
   });
 });

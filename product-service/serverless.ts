@@ -27,7 +27,6 @@ const serverlessConfiguration: Serverless = {
       DB_PASSWORD: '${env:DB_PASSWORD}',
       DB_HOST: '${env:DB_HOST}',
       DB_PORT: '${env:DB_PORT}',
-      SQS_URL: { Ref: 'SQSQueue' },
       SNS_ARN: { Ref: 'SNSTopic' },
     },
     iamRoleStatements: [
@@ -57,7 +56,7 @@ const serverlessConfiguration: Serverless = {
           TopicName: 'createProductTopic',
         },
       },
-      SNSSubscription: {
+      SNSBudgetSubscription: {
         Type: 'AWS::SNS::Subscription',
         Properties: {
           Endpoint: 'node.aws.sns@gmail.com',
@@ -68,7 +67,7 @@ const serverlessConfiguration: Serverless = {
           },
         },
       },
-      SNSFilterSubscription: {
+      SNSExpensiveSubscription: {
         Type: 'AWS::SNS::Subscription',
         Properties: {
           Endpoint: 'node.aws.sns.filter@gmail.com',
