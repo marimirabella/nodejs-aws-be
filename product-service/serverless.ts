@@ -1,4 +1,4 @@
-import type { Serverless } from 'serverless/aws';
+import { Serverless } from 'serverless/aws';
 
 const serverlessConfiguration: Serverless = {
   service: {
@@ -27,6 +27,75 @@ const serverlessConfiguration: Serverless = {
       DB_PASSWORD: '${env:DB_PASSWORD}',
       DB_HOST: '${env:DB_HOST}',
       DB_PORT: '${env:DB_PORT}',
+      SNS_ARN: { Ref: 'SNSTopic' },
+    },
+    iamRoleStatements: [
+      {
+        Effect: 'Allow',
+        Action: 'sqs:*',
+        Resource: { 'Fn::GetAtt': ['SQSQueue', 'Arn'] },
+      },
+      {
+        Effect: 'Allow',
+        Action: 'sns:*',
+        Resource: { Ref: 'SNSTopic' },
+      },
+    ],
+  },
+  resources: {
+    Resources: {
+      SQSQueue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: 'catalogItemsQueue',
+        },
+      },
+      SNSTopic: {
+        Type: 'AWS::SNS::Topic',
+        Properties: {
+          TopicName: 'createProductTopic',
+        },
+      },
+      SNSBudgetSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: 'node.aws.sns@gmail.com',
+          Protocol: 'email',
+          TopicArn: { Ref: 'SNSTopic' },
+          FilterPolicy: {
+            cost: ['budget'],
+          },
+        },
+      },
+      SNSExpensiveSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: 'node.aws.sns.filter@gmail.com',
+          Protocol: 'email',
+          TopicArn: { Ref: 'SNSTopic' },
+          FilterPolicy: {
+            cost: ['expensive'],
+          },
+        },
+      },
+    },
+    Outputs: {
+      catalogItemsQueueUrl: {
+        Value: {
+          Ref: 'SQSQueue',
+        },
+        Export: {
+          Name: 'catalogItemsQueueUrl',
+        },
+      },
+      catalogItemsQueueArn: {
+        Value: {
+          'Fn::GetAtt': ['SQSQueue', 'Arn'],
+        },
+        Export: {
+          Name: 'catalogItemsQueueArn',
+        },
+      },
     },
   },
   functions: {
@@ -62,6 +131,19 @@ const serverlessConfiguration: Serverless = {
             method: 'post',
             path: 'products',
             cors: true,
+          },
+        },
+      ],
+    },
+    catalogBatchProcess: {
+      handler: 'handler.catalogBatchProcess',
+      events: [
+        {
+          sqs: {
+            arn: {
+              'Fn::GetAtt': ['SQSQueue', 'Arn'],
+            },
+            batchSize: 5,
           },
         },
       ],

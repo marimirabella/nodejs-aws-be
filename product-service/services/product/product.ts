@@ -1,10 +1,25 @@
-import { getClient, Product, Stock } from '../../data-access';
+import {} from './../../data-access';
+import {
+  getClient,
+  Product,
+  ProductWithStock,
+  ProductWithStockBody,
+  Stock,
+} from '../../data-access';
+import { begin, commit, rollback } from '../transactionQueries';
+import {
+  getAddStockQueryValues,
+  getAddProductsQueryValues,
+  parseProduct,
+  parseProducts,
+} from './utils';
 import {
   createProductsTableQuery,
   addProductsQuery,
   getProductByIdQuery,
   getProductsWithStocksQuery,
   insertProductQuery,
+  insertProductsQuery,
 } from './productQueries';
 import {
   addStockItemsQuery,
@@ -12,13 +27,8 @@ import {
   getProductIdsQuery,
   createStockQuery,
 } from './stockQueries';
-import { begin, commit, rollback } from '../transactionQueries';
-
-const defaultImgUrl =
-  'https://lp-cms-production.imgix.net/features/2019/05/Solo-Travel-in-Nature-acbfea52bfaf.jpg';
-
 export class ProductService {
-  async getProducts(): Promise<Product[]> {
+  async getProducts(): Promise<ProductWithStock[]> {
     const client = getClient();
     await client.connect();
 
@@ -26,28 +36,27 @@ export class ProductService {
     await client.query(addProductsQuery);
     await this.addStocks();
 
-    const { rows: products } = await client.query<Product>(getProductsWithStocksQuery);
+    const { rows: products } = await client.query<ProductWithStock>(getProductsWithStocksQuery);
 
     await client.end();
 
     return products;
   }
 
-  async getProductById(id: string): Promise<Product | null> {
+  async getProductById(id: string): Promise<ProductWithStock | null> {
     const client = getClient();
     await client.connect();
 
     const {
       rows: [product],
-    } = await client.query<Product>(getProductByIdQuery, [id]);
+    } = await client.query<ProductWithStock>(getProductByIdQuery, [id]);
 
     await client.end();
 
     return product;
   }
 
-  async createProduct(body: Product): Promise<Product> {
-    const { title, description, price, image_url = defaultImgUrl, count } = body;
+  async createProduct(body: ProductWithStockBody): Promise<Product> {
     const client = getClient();
 
     try {
@@ -55,6 +64,7 @@ export class ProductService {
 
       await client.query(begin);
 
+      const { title, description, price, image_url, count } = parseProduct(body);
       const values = [title, description, price, image_url];
 
       const {
@@ -67,7 +77,7 @@ export class ProductService {
 
       const {
         rows: [product],
-      } = await client.query<Product>(getProductByIdQuery, [id]);
+      } = await client.query<ProductWithStock>(getProductByIdQuery, [id]);
 
       await client.end();
 
@@ -79,16 +89,46 @@ export class ProductService {
     }
   }
 
+  async createProducts(body: ProductWithStockBody[]): Promise<ProductWithStock[] | null> {
+    const client = getClient();
+
+    try {
+      await client.connect();
+
+      await client.query(begin);
+
+      const values = getAddProductsQueryValues(parseProducts(body));
+
+      const { rows: products } = await client.query<ProductWithStock>(insertProductsQuery, values);
+
+      await client.query(commit);
+
+      await client.end();
+
+      return products;
+    } catch (err) {
+      await client.query(rollback);
+
+      throw err;
+    }
+  }
+
   async addStocks(): Promise<void> {
     const client = getClient();
-    await client.connect();
+    try {
+      await client.connect();
 
-    await client.query(createStockTableQuery);
+      await client.query(createStockTableQuery);
 
-    const { rows: productIds } = await client.query<Record<string, string>>(getProductIdsQuery);
+      const { rows: productIds } = await client.query<Record<string, string>>(getProductIdsQuery);
 
-    await client.query(addStockItemsQuery(productIds));
+      const values = getAddStockQueryValues(productIds);
 
-    await client.end();
+      await client.query(addStockItemsQuery, values);
+
+      await client.end();
+    } catch (err) {
+      throw err;
+    }
   }
 }

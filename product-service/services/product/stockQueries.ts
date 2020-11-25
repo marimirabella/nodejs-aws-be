@@ -5,23 +5,11 @@ export const createStockTableQuery = `
   )
 `;
 
-export const addStockItemsQuery = (productIds: Record<string, string>[]) => {
-  const stocks = productIds.map(({ id }) => ({
-    id,
-    count: Math.floor(Math.random() * (100 - 1) + 1),
-  }));
-
-  const stocksQuery = stocks.map(({ id, count }) => [`'${id}'`, count]).join('), \n (');
-
-  return `
-    insert into stocks (product_id, count) values
-      (${stocksQuery}) on conflict do nothing
-  `;
-};
+export const addStockItemsQuery = `
+  insert into stocks (product_id, count) select * from unnest ($1::uuid[], $2::int[]) on conflict do nothing`;
 
 export const getProductIdsQuery = `select id from products`;
 
 export const getStockItemsQuery = `select * from stocks`;
 
-export const createStockQuery = `insert into stocks (product_id, count) values ($1, $2) returning *`
-
+export const createStockQuery = `insert into stocks (product_id, count) values ($1, $2) returning *`;

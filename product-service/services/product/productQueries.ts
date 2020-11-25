@@ -28,3 +28,20 @@ export const getProductByIdQuery = `select products.*, count from products join 
 export const insertProductQuery = `
     insert into products (title, description, price, image_url) values ($1, $2, $3, $4) returning *
   `;
+
+export const insertProductsQuery = `
+  with product_ids as (
+    insert into products (title, description, price, image_url)
+    select * from unnest ($1::text[], $2::text[], $3::int[], $4::text[])
+    on conflict (title) do update
+    set title = products.title
+    returning *
+  ),
+  count_list as (
+    insert into stocks (product_id, count)
+    select * from unnest (array(select id from product_ids), $5::int[])
+    on conflict do nothing
+    returning count
+  )
+  select distinct on (title) * from product_ids, count_list
+`;

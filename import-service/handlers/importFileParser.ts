@@ -1,7 +1,7 @@
 import { S3Handler } from 'aws-lambda';
 import csvParser from 'csv-parser';
 
-import { awsImportBucket, s3 } from './constants';
+import { awsImportBucket, s3, sqs } from './constants';
 
 export const importFileParser: S3Handler = async ({ Records }) => {
   try {
@@ -17,15 +17,20 @@ export const importFileParser: S3Handler = async ({ Records }) => {
 
         s3Stream
           .pipe(csvParser())
-          .on('data', data => {
-            console.log('csv row', data);
+          .on('data', async item => {
+            console.log('csv row', item);
+
+            const sqsSendMessageParams = {
+              QueueUrl: process.env.PRODUCT_SQS_URL!,
+              MessageBody: JSON.stringify(item),
+            };
+
+            await sqs.sendMessage(sqsSendMessageParams).promise();
           })
           .on('end', async () => {
             console.log(`Copy from ${awsImportBucket}/${recordKey}`);
 
             const parsePath = recordKey.replace('uploaded', 'parsed');
-
-            console.log(recordKey, 'recordKey', parsePath);
 
             const copyObjectParams = {
               Bucket: awsImportBucket,
@@ -56,6 +61,6 @@ export const importFileParser: S3Handler = async ({ Records }) => {
       });
     });
   } catch (err) {
-    console.log('Import file parser error:', err);
+    console.log('Import file parser error:', err.message);
   }
 };
