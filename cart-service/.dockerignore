@@ -1,0 +1,14 @@
+# This folder should be excluded not only because of the size but
+# the newly created node modules should be used
+node_modules
+# Build directory should be excluded
+dist
+# The testing coverage folder obviously is not needed in the container
+coverage
+# These files are redundant in the container
+.git
+.dockerignore
+.elasticbeanstalk
+.prettierrc
+README.md
+*.log

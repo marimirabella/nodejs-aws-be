@@ -12,7 +12,7 @@ export const createProductsTableQuery = `
 
 export const addProductsQuery = `
   insert into products (title, description, price, image_url) values
-    ('The weekend in Cappadocia', 'Do you dream of a land with abounding fairy chimney rock formations, underground cities and churches inside rock-cut caves?', 1000, 'https://www.impetustravel.com/wp-content/uploads/2020/06/cap1.jpg'),
+    ('The weekend in Cappadocia', 'Do you dream of a land with abounding fairy chimney rock formations, underground cities and churches inside rock-cut caves?', 1000, 'https://www.blueeyetour.com/assets/resimler/turlar/2e1ad-hot-air-balloons-1920x1080.jpg'),
     ('Erciyes ski New Year tour', 'Skiing is one of the best activity that is very close to the Göreme town. Mount Erciyes at Kayseri is the local skiing center', 1500, 'https://img.itinari.com/activity/images/original/2b40b4e1-e527-4c30-b56a-31d90fe35568-erciyes-kayak-merkezi-1024x686.jpg?ch=DPR&dpr=1&w=1200&h=800&s=f83760cfb0ad85c01a0f89404199386b'),
     ('Mexico City: Teotihuacan, Shrine of Guadalupe & Tlatelolco', 'After being picked up from your hotel or accommodation, travel with your guide to the first stop on the tour, Tlatelolco.', 3000, 'https://www.history.com/.image/c_fit%2Ccs_srgb%2Cfl_progressive%2Cq_auto:good%2Cw_620/MTU3ODc5MDg3MjM4NDIzODgx/mexico-anahuac-teotihuacan-pyramid-de-la-luna.jpg'),
     ('The weekend in Amsterdam', 'From kayaking the iconic canals to discovering its world-famous art tradition, exploring Amsterdam can feel like walking through a dream. Find the best things to do and make the most of your visit to the Dutch capital.', 1000, 'https://www.telegraph.co.uk/content/dam/insurance/2016/04/06/amsterdam.jpg'),

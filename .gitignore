@@ -2,6 +2,7 @@
 node_modules/
 jspm_packages
 .vscode
+dist
 
 # Serverless directories
 .serverless
@@ -12,5 +13,14 @@ jspm_packages
 # misc
 .env
 
+# Tests
+coverage
+.nyc_output
+
+# Logs
+logs
+*.log
 yarn-debug.log*
 yarn-error.log*
+lerna-debug.log*
+npm-debug.log*
